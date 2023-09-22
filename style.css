@@ -1,0 +1,75 @@
+
+body{
+    background-color: #e8e8e8 !important;
+}
+/*
+.cont1{
+    border: 2px solid blue;
+    width: fit-content !important;
+}
+.cont2{
+    border: 2px solid rgb(0, 255, 51);
+   width: fit-content !important;
+}
+
+.infoDepense{
+    border: 1px solid red;
+} 
+
+*/
+.budget{
+    border: 1px solid green !important;
+}
+
+.budget input{
+    outline: 1px solid green !important; 
+}
+
+.expense input{
+    outline: 1px solid red !important;
+}
+.expense{
+  outline: 1px solid red !important;
+}
+/* ///////////////////////////////////////////////////////// */
+/* .expense-amount,
+.expense-title {
+  color: var(--mainRed);
+} */
+
+.iconBudget,
+.iconExpnse,
+.iconBalance,#iconSitting{
+  color: #086171 !important;
+}
+.edit-icon {
+  color: #44c7d8 !important;
+  cursor: pointer;
+  font-size: 1rem;
+  text-decoration: none !important;
+}
+.delete-icon {
+  color: red !important;
+  cursor: pointer;
+  font-size: 1rem;
+  text-decoration: none !important;
+}
+
+
+.titleNote{
+    background-color: #578f88;
+}
+.hidden{
+  display: none !important;
+}
+.notification{ 
+  border: 2px solid #578f88;
+  
+}
+
+ /* grahe  */
+
+/* .graphe{
+  border: 2px solid red;
+  background-color: #44c7d8;  
+} */
