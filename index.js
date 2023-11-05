@@ -21,25 +21,24 @@ const closeHistory = document.querySelector('#boutCloseHistory');
 
 //  information sur chaque depense
 function ligneDepense(table) {
-  infoDepense.innerHTML = ''
+  infoDepense.innerHTML = '';
   table.forEach(element => {
-    let div = document.createElement('div');
-    div.classList.add('d-flex', 'justify-content-between');
-    div.innerHTML = `<h6 class="nomDepense" class=" mb-0">${element.nomProduit}</h6>
-                    <h6 class="valeurDepense" class=" text-center mb-0">${element.valeurProduit} F</h6>
-                    <div>
-                    <a href="#" class="edit-icon mx-2" data-id = "${element.id}" >
-                      <i class="fas fa-edit"></i>
-                    </a>
-                    <a href="#" class="delete-icon" data-id = "${element.id}">
-                      <i class="fas fa-trash"></i>
-                    </a>
-                    </div>
+    let tr = document.createElement('tr');
+    // div.classList.add('d-flex', 'justify-content-between');
+    tr.innerHTML = ` <td class="nomDepense">${element.nomProduit}</td>
+                     <td class="valeurDepense">${element.valeurProduit} F</td>
+                     <td> 
+                      <a href="#" class="edit-icon mx-3" data-id = "${element.id}" >
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="#" class="delete-icon" data-id = "${element.id}">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
                    `;
-    infoDepense.append(div);
+    infoDepense.append(tr);
   });
   setTableExpense();
-
 }
 
 
@@ -48,14 +47,15 @@ function ligneDepense(table) {
 function ligneHistorique(table) {
   tabHistory.innerHTM = '';
   table.forEach(element => {
-    let lignesHistory = document.createElement('div')
-    lignesHistory.classList.add('d-flex', 'justify-content-between');
-    lignesHistory.innerHTML = `<h6>${element.id}</h6>
-      <h6 class="nomDepense" class=" mb-0">${element.nomProduit}</h6>
-      <h6 class="valeurDepense" class=" text-center mb-0">${element.valeurProduit} F</h6>`;
-    tabHistory.append(lignesHistory);
+    let tr = document.createElement('tr');
+    tr.innerHTML = `
+                    <td>${element.id}</td>
+                     <td class="nomDepense">${element.nomProduit}</td>
+                     <td class="valeurDepense">${element.valeurProduit} F</td>
+                     `;
+     tabHistory.append(tr);
   });
-  
+
 }
 
 // calcul de la valeur du budget
@@ -98,7 +98,7 @@ function addBudget() {
   } else {
 
     valBudget.value = '';
-    
+
     totalBuget = JSON.parse(localStorage.getItem('budget')) + valeur;
     localStorage.setItem('budget', JSON.stringify(totalBuget));
 
@@ -109,8 +109,8 @@ function addBudget() {
     budgetStatus.innerHTML = `${getBudget()} F`;
     balanceStatuts.innerHTML = `${getBalance()} F`
 
-   
-    
+
+
     //   balanceStatuts.textContent = `${totalBuget - valExpenseInitiale} F`;
 
     blockBoutHistoy.classList.remove('hidden');
@@ -120,7 +120,7 @@ function addBudget() {
     }, 1000);
   }
 
-  
+
 
 }
 
@@ -158,7 +158,7 @@ if (!localStorage.getItem('id')) {
 }
 
 
-function getIndex(){return JSON.parse(localStorage.getItem('id'));}
+function getIndex() { return JSON.parse(localStorage.getItem('id')); }
 index = getIndex();
 
 
@@ -195,8 +195,8 @@ function addExpense() {
 
     totalBalance = JSON.parse(localStorage.getItem('budget')) - JSON.parse(localStorage.getItem('expense'));
     localStorage.setItem('balance', JSON.stringify(totalBalance));
-    
-   
+
+
     balanceStatuts.innerHTML = `${getBalance()} F`
     expenseStatuts.innerHTML = `${getExpense()} F`
     /*---------------- Info sur la depense / titre et valeur de la depense -------------------*/
@@ -224,7 +224,7 @@ function addExpense() {
       index++
       localStorage.setItem('id', JSON.stringify(index));
     }
- 
+
 
 
 
@@ -233,7 +233,7 @@ function addExpense() {
     //historique
 
     ligneHistorique(tableExpense)
-// console.log(ligneHistorique(tableExpense));
+    // console.log(ligneHistorique(tableExpense));
     expenseTitle.value = '';
     /* --------------Notification -------------------- */
     notification.classList.remove('hidden');
@@ -247,7 +247,7 @@ function addExpense() {
 
   }
 
-location.reload();
+  location.reload();
 
 }
 
@@ -272,7 +272,7 @@ window.onload = () => {
   }
 
 }
-  
+
 
 
 //
@@ -304,7 +304,7 @@ function getTableExpense() {
     // console.log(tableExpense);
     ligneDepense(tableExpense);
     ligneHistorique(tableExpense);
-  } 
+  }
 }
 getTableExpense();
 
@@ -315,11 +315,11 @@ getTableExpense();
 const editBtn = document.querySelectorAll('.edit-icon');
 // console.log(editBtn);
 editBtn.forEach(button => {
-  button.addEventListener('click', ()=>{
+  button.addEventListener('click', () => {
     console.log(tableExpense, button.dataset.id, tableExpense[button.dataset.id]);
-    let parent  = button.parentNode.parentNode;
+    let parent = button.parentNode.parentNode;
     parent.remove();
-    
+
     expenseTitle.value = tableExpense[button.dataset.id].nomProduit;
     expenseValue.value = tableExpense[button.dataset.id].valeurProduit;
     let newTotalEpexpense = getExpense() - tableExpense[button.dataset.id].valeurProduit;
@@ -329,14 +329,14 @@ editBtn.forEach(button => {
     totalExpense = localStorage.setItem('expense', newTotalEpexpense);
     expenseStatuts.textContent = `${getExpense()}`
     balanceStatuts.textContent = `${getBalance()}`
-     setTableExpense();
-     //------- Décrementation du nombres des id ---------------
-     index--;
-     localStorage.setItem('id', JSON.stringify(index));
-     console.log(getIndex());
+    setTableExpense();
+    //------- Décrementation du nombres des id ---------------
+    index--;
+    localStorage.setItem('id', JSON.stringify(index));
+    console.log(getIndex());
   })
-  
-}) 
+
+})
 
 
 //-------------- Supprission des produits --------------------
@@ -345,11 +345,11 @@ const deleteBtn = document.querySelectorAll('.delete-icon');
 // console.log(deleteBtn);
 
 deleteBtn.forEach(button => {
-  button.addEventListener('click', ()=>{
+  button.addEventListener('click', () => {
     console.log(tableExpense, button.dataset.id, tableExpense[button.dataset.id]);
-    let parent  = button.parentNode.parentNode;
+    let parent = button.parentNode.parentNode;
     parent.remove();
-    
+
     let newTotalEpexpense = getExpense() - tableExpense[button.dataset.id].valeurProduit;
     let newBalance = getBalance() + tableExpense[button.dataset.id].valeurProduit;
     tableExpense.splice(button.dataset.id, 1);
@@ -357,14 +357,14 @@ deleteBtn.forEach(button => {
     totalExpense = localStorage.setItem('expense', newTotalEpexpense);
     expenseStatuts.textContent = `${getExpense()}`
     balanceStatuts.textContent = `${getBalance()}`
-     setTableExpense();
+    setTableExpense();
 
-     //------- Décrementation du nombres des id ---------------
-     index--;
-     localStorage.setItem('id', JSON.stringify(index));
-     console.log(getIndex());
-     location.reload()
-   
+    //------- Décrementation du nombres des id ---------------
+    index--;
+    localStorage.setItem('id', JSON.stringify(index));
+    console.log(getIndex());
+    location.reload()
+
   })
 })
 
@@ -379,9 +379,9 @@ let dataChart = [];
 tableExpense.forEach(element => {
   // console.log(element);
   // console.log(element.valeurProduit);
-  
-dataChart.push(element.valeurProduit);
-labelChart.push(element.nomProduit);
+
+  dataChart.push(element.valeurProduit);
+  labelChart.push(element.nomProduit);
 
 });
 // console.log(labelChart, dataChart);
@@ -390,22 +390,22 @@ const ctx = document.getElementById('myChart');
 new Chart(ctx, {
   type: 'doughnut',
   data: {
-    labels:  labelChart,
+    labels: labelChart,
     datasets: [{
-      label:labelChart, //'# of Votes',
-      data:dataChart,  //[12, 19, 3, 5, 2, 3
+      label: labelChart, //'# of Votes',
+      data: dataChart,  //[12, 19, 3, 5, 2, 3
       borderWidth: 1
     }]
   },
   options: {
-    
+
     scales: {
-        x:{
-          display: false,
-        },
-       y: {
+      x: {
+        display: false,
+      },
+      y: {
         beginAtZero: true,
-        display : false,
+        display: false,
       }
     }
   }

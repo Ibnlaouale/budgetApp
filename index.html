@@ -63,15 +63,32 @@
                 
                 <div class="expense-list">
 
-                  <div class="d-flex justify-content-between text-capitalize">
+                  <!-- <div class="d-flex justify-content-between text-capitalize">
                    <h5>expense title</h5>
                    <h5>expense value</h5>
                    <h5 id="iconSitting"><i class="fa-solid fa-gear"></i></h5>
-                  </div>
+                  </div> -->
                   
                   <!-- Info sur la depense titre et valeur de la depense -->
            
-                  <div class="infoDepense "></div> 
+                  
+                    <table class="table text-center table-secondary">
+                      <thead class=" ">
+                        <tr>
+                          <th scope="col">Expense title</th>
+                          <th scope="col">Expense value</th>
+                          <th scope="col"><i class="fa-solid fa-gear"></i></th>
+                        </tr>
+                      </thead>
+                      <tbody class="infoDepense ">
+                        <tr>
+                          <td>Mark</td>
+                          <td>Otto</td>
+                          <td>@mdo</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                 
            
                   <!-- end of single expense -->
            
@@ -88,16 +105,18 @@
               <!-- historique -->
               <div id="history" class="mt-5 hidden">
                 <div class="expense-list" id="expense-list">
-
-                  <!-- titles expenses -->
-                  <div class="d-flex justify-content-between text-capitalize">
-                   <h5>#</h5>
-                   <h5>expense title</h5>
-                   <h5>expense value</h5> 
-                  </div>
-                  <!-- single expense -->
            
-                  <div id="tabHistory"></div> 
+                    <table class="table text-center table-primary">
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Expense title</th>
+                          <th scope="col">Expense value</th> 
+                        </tr>
+                      </thead>
+                      <tbody id="tabHistory"></tbody>
+                    </table>
+                  
                  </div>
                  <!-- buttun close -->
                  <div id="blockBoutCloseHistory" class="d-grid gap-2 mt-5">
