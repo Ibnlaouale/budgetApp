@@ -411,7 +411,7 @@ const ctx = document.getElementById('myChart');
       }
     }
   };
-   new Chart(ctx, config);
+  let graphe = new Chart(ctx, config);
  
 
 
