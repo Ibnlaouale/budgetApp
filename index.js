@@ -226,8 +226,6 @@ function addExpense() {
     }
 
 
-
-
     ligneDepense(tableExpense);
 
     //historique
@@ -247,7 +245,9 @@ function addExpense() {
 
   }
 
-  location.reload();
+  setTimeout(() => {
+    location.reload();
+  }, 2500);
 
 }
 
@@ -387,29 +387,33 @@ tableExpense.forEach(element => {
 // console.log(labelChart, dataChart);
 // ==================================================
 const ctx = document.getElementById('myChart');
-new Chart(ctx, {
-  type: 'doughnut',
-  data: {
-    labels: labelChart,
-    datasets: [{
-      label: labelChart, //'# of Votes',
-      data: dataChart,  //[12, 19, 3, 5, 2, 3
-      borderWidth: 1
-    }]
-  },
-  options: {
 
-    scales: {
-      x: {
-        display: false,
-      },
-      y: {
-        beginAtZero: true,
-        display: false,
+  let config  = {
+    type: 'doughnut',
+    data: {
+      labels: labelChart,
+      datasets: [{
+        label: labelChart, //'# of Votes',
+        data: dataChart,  //[12, 19, 3, 5, 2, 3
+        borderWidth: 1
+      }]
+    },
+    options: {
+  
+      scales: {
+        x: {
+          display: false,
+        },
+        y: {
+          beginAtZero: true,
+          display: false,
+        }
       }
     }
-  }
-});
+  };
+   new Chart(ctx, config);
+ 
+
 
 // ==================================================
 
