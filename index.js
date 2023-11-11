@@ -1,82 +1,81 @@
+//============== RECUPERATION DES INPUT ===========================
+const inputBudget = document.querySelector('#valBudget');
+const inputExpenseTitle = document.querySelector('#expenseTitle');
+const inputExpenseAmount = document.querySelector('#expenseValue');
+
+// =========RECUPERATION DES BUTTONS ==============================
+
+const buttonCalculate = document.querySelector('#calculBuget');
+const buttonAddExpense = document.querySelector('#addExpense');
+const buttonReset = document.querySelector('#reset')
+const buttonHistory = document.querySelector('#boutHistory');
+const buttonCloseHistory = document.querySelector('#boutCloseHistory');
+
+// ================= RECUPERATIO DE LA DIV HISTORY ================
+const divHistory = document.querySelector('#history');
+//==============RECUPERATION DES STATUS DES VALEURS ===============
+
+const budgetStatus = document.querySelector('#budgetStatus');
+const expenseStatus = document.querySelector('#expenseStatuts');
+const balanceStatuts = document.querySelector('#balanceStatuts');
+
+// =====================================================================================
+// =====================================================================================
 
 
-// ///////////////////////////////////////////////////////////////////////////
+// =============INTIALISATION DE LOCALSTORAGE =====================
 
-
-let reset = document.querySelector('#reset')
-let valBudget = document.querySelector('#valBudget');
-const calculBuget = document.querySelector('#calculBuget');
-budgetStatus = document.querySelector('#budgetStatus');
-let balanceStatuts = document.querySelector('#balanceStatuts');
-let expenseStatuts = document.querySelector('#expenseStatuts');
-const notification = document.querySelector('#notification');
-const blockBoutHistoy = document.querySelector('#blockBoutHistoy')
-let boutHistory = document.querySelector('#boutHistory');
-const history = document.querySelector('#history');
-const closeHistory = document.querySelector('#boutCloseHistory');
-
-
-
-/* --------------les fonctions ---------------------- */
-
-//  information sur chaque depense
-function ligneDepense(table) {
-  infoDepense.innerHTML = '';
-  table.forEach(element => {
-    let tr = document.createElement('tr');
-    // div.classList.add('d-flex', 'justify-content-between');
-    tr.innerHTML = ` <td class="nomDepense">${element.nomProduit}</td>
-                     <td class="valeurDepense">${element.valeurProduit} F</td>
-                     <td> 
-                      <a href="#" class="edit-icon mx-3" data-id = "${element.id}" >
-                            <i class="fas fa-edit"></i>
-                        </a>
-                        <a href="#" class="delete-icon" data-id = "${element.id}">
-                            <i class="fas fa-trash"></i>
-                        </a>
-                    </td>
-                   `;
-    infoDepense.append(tr);
-  });
-  setTableExpense();
+if (!localStorage.getItem('tableExpense')) {
+  localStorage.setItem('tableExpense', JSON.stringify([]));
 }
-
-
-// information sur sur l'historique
-
-function ligneHistorique(table) {
-  tabHistory.innerHTM = '';
-  table.forEach(element => {
-    let tr = document.createElement('tr');
-    tr.innerHTML = `
-                    <td>${element.id}</td>
-                     <td class="nomDepense">${element.nomProduit}</td>
-                     <td class="valeurDepense">${element.valeurProduit} F</td>
-                     `;
-     tabHistory.append(tr);
-  });
-
-}
-
-// calcul de la valeur du budget
-
-let totalBuget = 0;
-let totalExpense = 0;
-let totalBalance = 0;
-
 if (!localStorage.getItem('budget')) {
-  totalBuget = localStorage.setItem('budget', JSON.stringify(totalBuget));
+  localStorage.setItem('budget', 0);
 }
-
-if (!localStorage.getItem('balance')) {
-  totalBalance = localStorage.setItem('balance', JSON.stringify(totalBalance));
-}
-
 
 
 if (!localStorage.getItem('expense')) {
-  totalExpense = localStorage.setItem('expense', JSON.stringify(totalExpense))
+  localStorage.setItem('expense', 0);
 }
+
+
+if (!localStorage.getItem('balance')) {
+  localStorage.setItem('balance', 0);
+}
+
+
+if (!localStorage.getItem('id')) {
+  localStorage.setItem('id', 1);
+}
+
+
+
+
+let totalBudget = JSON.parse(localStorage.getItem('budget'));
+let totalExpense = JSON.parse(localStorage.getItem('expense'));
+let totalBalance = JSON.parse(localStorage.getItem('balance'));
+let tableExpense = JSON.parse(localStorage.getItem('tableExpense'));
+let index = JSON.parse(localStorage.getItem('id'));
+// =============FONCTION DE MISE A JOUR DE LOCALSTORAGE =================
+
+function updatLocalStorage() {
+  localStorage.setItem('budget', JSON.stringify(totalBudget));
+  localStorage.setItem('expense', JSON.stringify(totalExpense));
+  localStorage.setItem('balance', JSON.stringify(totalBalance));
+  localStorage.setItem('tableExpense', JSON.stringify(tableExpense));
+  localStorage.setItem('id', JSON.stringify(index));
+}
+
+// ================ REINITIALISATION DE LOCALSTORAGE =================
+
+function reinitialise() {
+  localStorage.clear();
+  showStatus();
+  tableExpense = [];
+  location.reload();
+}
+
+// =====================================================================================
+// ============= FONNCTION POUR LES CALCULS DE BUDGET , BALANCE  ========================
 
 function addBudget() {
 
@@ -85,165 +84,41 @@ function addBudget() {
   ///------------Gestion d'erreur
 
   if (!valeur || valeur < 0) {
-    notification.classList.remove('hidden');
-    notification.children[0].classList.add('bg-danger');
-    notification.children[1].textContent = 'Votre budget doit être positif';
-    notification.children[1].classList.add('text-danger');
-    notification.classList.add('border-danger');
-    setTimeout(() => {
-      notification.classList.add('hidden');
-    }, 1500);
-    blockBoutHistoy.classList.remove('hidden');
+    //  ------- notification -----------
+    titleNotif = 'Ajout de budget';
+    descriptionNotif = 'Votre budget doit être positif';
+    notifError(titleNotif, descriptionNotif);
 
   } else {
 
     valBudget.value = '';
 
-    totalBuget = JSON.parse(localStorage.getItem('budget')) + valeur;
-    localStorage.setItem('budget', JSON.stringify(totalBuget));
+    totalBudget += valeur;
+    totalBalance = totalBudget - totalExpense;
+    updatLocalStorage();
+    showStatus();
 
-    totalBalance = totalBuget - JSON.parse(localStorage.getItem('expense'));
-    localStorage.setItem('balance', JSON.stringify(totalBalance));
-
-    // console.log(getExpense());
-    budgetStatus.innerHTML = `${getBudget()} F`;
-    balanceStatuts.innerHTML = `${getBalance()} F`
-
-
-
-    //   balanceStatuts.textContent = `${totalBuget - valExpenseInitiale} F`;
-
-    blockBoutHistoy.classList.remove('hidden');
-    notification.classList.remove('hidden');
-    setTimeout(() => {
-      notification.classList.add('hidden');
-    }, 1000);
+    //  ------- notification -----------
+    titleNotif = 'Ajout de budget';
+    descriptionNotif = 'Votre budget a été ajouté avec success';
+    notifSuccess(titleNotif, descriptionNotif);
   }
 
 
 
 }
-
-
-
-function getBudget() { return JSON.parse(localStorage.getItem('budget')); }
-function getBalance() { return JSON.parse(localStorage.getItem('balance')); }
-function getExpense() { return JSON.parse(localStorage.getItem('expense')) }
-
-//Afichage de l'historique au click boutton history
-
-boutHistory.addEventListener('click', () => {
-  history.classList.remove('hidden');
-});
-
-// fermeture de l'historique au click de boutton close
-
-closeHistory.addEventListener('click', () => {
-  history.classList.add('hidden');
-})
-
-/* -------------- calcul des depenses -------------------- */
-
-let expenseTitle = document.querySelector('#expenseTitle');
-let valeurDepense = document.querySelector('#valeurDepense');
-let expenseValue = document.querySelector('#expenseValue');
-const infoDepense = document.querySelector('.infoDepense')
-const tabHistory = document.querySelector('#tabHistory');
-let tableExpense = [];
-//-------------- Dans le local l'index s'incremente et determine le nombre des produits stockés -------------------
-//------------- chaque produit a son id à compter de 0 -------------------------------------------
-let index = 0;
-if (!localStorage.getItem('id')) {
-  localStorage.setItem('id', JSON.stringify(index));
-}
-
-
-function getIndex() { return JSON.parse(localStorage.getItem('id')); }
-index = getIndex();
-
-
-
 
 function addExpense() {
-
-
-  let valeurP = parseInt(expenseValue.value);
-
-  //  console.log(infoDepense.children);
-
-  //--------------Gestion d'erreur--------------
-
-  if (!valeurP || valeurP < 0 || valeurP === '') {
-
-    notification.classList.remove('hidden');
-    notification.children[0].classList.add('bg-danger');
-    notification.children[0].textContent = 'Ajout de la depense';
-    notification.children[1].textContent = 'Le montant de votre depense doit être positif';
-    notification.children[1].classList.add('text-danger');
-    notification.classList.add('border-danger');
-    setTimeout(() => {
-      notification.classList.add('hidden');
-    }, 1500);
-    blockBoutHistoy.classList.remove('hidden');
-
-  } else {
-
-    expenseValue.value = '';
-
-    totalExpense = JSON.parse(localStorage.getItem('expense')) + valeurP;
-    localStorage.setItem('expense', JSON.stringify(totalExpense));
-
-    totalBalance = JSON.parse(localStorage.getItem('budget')) - JSON.parse(localStorage.getItem('expense'));
-    localStorage.setItem('balance', JSON.stringify(totalBalance));
-
-
-    balanceStatuts.innerHTML = `${getBalance()} F`
-    expenseStatuts.innerHTML = `${getExpense()} F`
-    /*---------------- Info sur la depense / titre et valeur de la depense -------------------*/
-
-    const depense = {
-      id: index,
-      nomProduit: expenseTitle.value,
-      valeurProduit: valeurP
-    }
-
-    if (tableExpense.length > 0) {
-      const existP = tableExpense.find((produit) => produit.nomProduit === expenseTitle.value);
-      if (existP) {
-        tableExpense[existP.id]["valeurProduit"] += valeurP;
-        console.log(tableExpense, existP);
-      } else {
-        tableExpense.push(depense);
-        index++
-        localStorage.setItem('id', JSON.stringify(index));
-        // console.log(tableExpense, existP);
-      }
-
-    } else {
-      tableExpense.push(depense)
-      index++
-      localStorage.setItem('id', JSON.stringify(index));
-    }
-
-
-    ligneDepense(tableExpense);
-
-    //historique
-
-    ligneHistorique(tableExpense)
-    // console.log(ligneHistorique(tableExpense));
-    expenseTitle.value = '';
-    /* --------------Notification -------------------- */
-    notification.classList.remove('hidden');
-    notification.children[0].textContent = 'Ajout de la depense';
-    notification.children[1].textContent = 'votre depense a été ajoutée avec success';
-
-    setTimeout(() => {
-      notification.classList.add('hidden');
-    }, 1500);
-    blockBoutHistoy.classList.remove('hidden');
-
-  }
+  let productTitle = (inputExpenseTitle.value).trim();
+  let productAmount = parseInt(inputExpenseAmount.value);
+  totalExpense += productAmount;
+  totalBalance = totalBudget - totalExpense;
+  // =====Appel de la fonction qui affiche l'etats des resultats =======
+  showStatus();
+  // =====Appel de la fonction qui cree les depenses =======
+  createExpense(productTitle, productAmount);
+  inputExpenseTitle.value = '';
+  inputExpenseAmount.value = '';
 
   setTimeout(() => {
     location.reload();
@@ -254,124 +129,166 @@ function addExpense() {
 
 
 
-/* ----------------------chargement des dernères valeurs -------------------------- */
 
 
 
+
+
+
+
+
+
+// ===================== CHARGEMENT DES DERNIERES VALEURS SUR DOM ============
 
 window.onload = () => {
-
-  if (getBudget() !== null && getBalance() !== null && getExpense() !== null) {
-    budgetStatus.innerHTML = `${getBudget()} F`;
-    balanceStatuts.innerHTML = `${getBalance()} F`
-    expenseStatuts.innerHTML = `${getExpense()} F`
-  } else {
-    budgetStatus.innerHTML = `${0} F`;
-    balanceStatuts.innerHTML = `${0} F`
-    expenseStatuts.innerHTML = `${0} F`
-  }
-
+  showStatus();
+}
+// ==============================================================
+let infoDepense = document.querySelector('.infoDepense');
+function ligneDepense() {
+  infoDepense.innerHTML = '';
+  tableExpense.forEach((element, index) => {
+    // let tr = document.createElement('tr');
+    infoDepense.innerHTML += `
+                    <tr>
+                    <td class="nomDepense">${element.nomProduit}</td>
+                     <td class="valeurDepense">${element.valeurProduit} F</td>
+                     <td> 
+                      <a href="#" onclick="editExpense(${index})" class="edit-icon mx-3" data-id = "${element.id}" >
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="#" onclick="deleteExpense(${index})" class="delete-icon" data-id = "${element.id}">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                    </tr>
+                   `;
+  });
 }
 
 
+// ============ information sur sur l'historique
 
-//
-
-
-/* -------------- Rénialisation de localstorage ---------------- */
-function reinitialise() {
-  localStorage.clear();
-  budgetStatus.textContent = `${0} F`;
-  balanceStatuts.textContent = `${0} F`;
-  expenseStatuts.textContent = `${0} F`;
-  tableExpense = [];
-  ligneDepense(tableExpense)
-  location.reload();
+function ligneHistorique() {
+  tabHistory.innerHTML = '';
+  tableExpense.forEach((element, index) => {
+    let tr = document.createElement('tr');
+    tabHistory.innerHTML += `<tr>
+                    <td>${index+1}</td>
+                     <td class="nomDepense">${element.nomProduit}</td>
+                     <td class="valeurDepense">${element.valeurProduit} F</td>
+                     </tr>
+                     `;
+  });
 }
 
 
+buttonHistory.addEventListener('click', () => {
+  divHistory.classList.remove('hidden');
+});
 
+//=== fermeture de l'historique au click de boutton close
 
+buttonCloseHistory.addEventListener('click', () => {
+  divHistory.classList.add('hidden');
+})
+// ======================================================
+// ================= FONCTIONS POUR LES NOTIFICATIONS  ================
 
-function setTableExpense() {
-  localStorage.setItem('listExpense', JSON.stringify(tableExpense));
+// ---------notification pour les operations de succès ---------------------
+function notifSuccess(titre, descprition) {
+
+  notification.classList.remove('hidden');
+  notification.children[0].textContent = titre;
+  notification.children[1].textContent = descprition;
+
+  setTimeout(() => {
+    notification.classList.add('hidden');
+    titleNotif = '';
+    descriptionNotif = '';
+  }, 1500);
 }
 
+// --------- notification pour les erreus  ---------------------
+function notifError(titre, descprition) {
 
-function getTableExpense() {
-  if (localStorage.getItem('listExpense')) {
-    tableExpense = JSON.parse(localStorage.getItem('listExpense'));
-    // console.log(tableExpense);
-    ligneDepense(tableExpense);
-    ligneHistorique(tableExpense);
-  }
+  notification.classList.remove('hidden');
+  notification.children[0].classList.add('bg-danger');
+  notification.children[0].textContent = titre;
+  notification.children[1].textContent = descprition;
+  notification.children[1].classList.add('text-danger');
+  notification.classList.add('border-danger');
+  setTimeout(() => {
+    notification.classList.add('hidden');
+    titleNotif = '';
+    descriptionNotif = '';
+  }, 1500);
 }
-getTableExpense();
 
+// ================================================================
 
-//------------------ Modification des produits ---------------------------------
-
+// ================ FONCTION POUR LA CREATION DES DEPENSES ================
 // console.log(tableExpense);
-const editBtn = document.querySelectorAll('.edit-icon');
-// console.log(editBtn);
-editBtn.forEach(button => {
-  button.addEventListener('click', () => {
-    console.log(tableExpense, button.dataset.id, tableExpense[button.dataset.id]);
-    let parent = button.parentNode.parentNode;
-    parent.remove();
-
-    expenseTitle.value = tableExpense[button.dataset.id].nomProduit;
-    expenseValue.value = tableExpense[button.dataset.id].valeurProduit;
-    let newTotalEpexpense = getExpense() - tableExpense[button.dataset.id].valeurProduit;
-    let newBalance = getBalance() + tableExpense[button.dataset.id].valeurProduit;
-    tableExpense.splice(button.dataset.id, 1);
-    totalBalance = localStorage.setItem('balance', newBalance);
-    totalExpense = localStorage.setItem('expense', newTotalEpexpense);
-    expenseStatuts.textContent = `${getExpense()}`
-    balanceStatuts.textContent = `${getBalance()}`
-    setTableExpense();
-    //------- Décrementation du nombres des id ---------------
-    index--;
-    localStorage.setItem('id', JSON.stringify(index));
-    console.log(getIndex());
-  })
-
-})
 
 
-//-------------- Supprission des produits --------------------
+function createExpense(titleExpense, valueExpense) {
+  const depense = {
+    id: index,
+    nomProduit: titleExpense.toLowerCase(),
+    valeurProduit: valueExpense
+  };
+  index++;
+  // ========== GESTION D'ERREURS ====================
+  if (titleExpense === '') {
+    // ---------------------------------------notification --------------
+    titleNotif = 'Ajout de la depense';
+    descriptionNotif = 'veuillez renseigner le titre de la depense';
+    notifError(titleNotif, descriptionNotif);
+    // -----------------------------------------------------------------------------
+  } else if (!valueExpense || valueExpense < 0 || valueExpense === '') {
 
-const deleteBtn = document.querySelectorAll('.delete-icon');
-// console.log(deleteBtn);
+    // ---------------------------------------notification ---------------------------
+    titleNotif = 'Ajout de la depense';
+    descriptionNotif = 'Le montant de votre depense doit être positif';
+    notifError(titleNotif, descriptionNotif);
+    // ===============================================================================
+  } else {
+    // ---------------- verification de l'existence de produit dans tableEexpense-------
+    const existP = tableExpense.find((produit) => (produit.nomProduit) === titleExpense.toLowerCase());
+    if (existP) {
+      console.log(true);
+      existP.valeurProduit += valueExpense;
+      // ---------------------------------------notification --------------------------------------
+      titleNotif = 'Mise à jour de la depense';
+      descriptionNotif = 'Depense mis à jour avec succès';
+      notifSuccess(titleNotif, descriptionNotif);
+      // -------------------------------------------------------------------------------------------
+      console.log(existP);
+      updatLocalStorage();
+    } else {
+      tableExpense.push(depense);
+      // -------------------------- notification --------------------------------------
+      titleNotif = 'Ajout de la depense';
+      descriptionNotif = 'votre depense a été ajoutée avec success';
+      notifSuccess(titleNotif, descriptionNotif);
+      // ----------------------------------------------------------------------------
+      updatLocalStorage();
+    }
+    console.log(tableExpense);
+  }
+ showStatus();
+}
 
-deleteBtn.forEach(button => {
-  button.addEventListener('click', () => {
-    console.log(tableExpense, button.dataset.id, tableExpense[button.dataset.id]);
-    let parent = button.parentNode.parentNode;
-    parent.remove();
-
-    let newTotalEpexpense = getExpense() - tableExpense[button.dataset.id].valeurProduit;
-    let newBalance = getBalance() + tableExpense[button.dataset.id].valeurProduit;
-    tableExpense.splice(button.dataset.id, 1);
-    totalBalance = localStorage.setItem('balance', newBalance);
-    totalExpense = localStorage.setItem('expense', newTotalEpexpense);
-    expenseStatuts.textContent = `${getExpense()}`
-    balanceStatuts.textContent = `${getBalance()}`
-    setTableExpense();
-
-    //------- Décrementation du nombres des id ---------------
-    index--;
-    localStorage.setItem('id', JSON.stringify(index));
-    console.log(getIndex());
-    location.reload()
-
-  })
-})
+function showStatus() {
+  budgetStatus.innerHTML = `${totalBudget} F`;
+  balanceStatuts.innerHTML = `${totalBalance} F`;
+  expenseStatus.innerHTML = `${totalExpense} F`;
+  ligneDepense();
+  ligneHistorique();
+}
 
 
-
-
-///------------------le graphe -------------------
+///==============LE GRAPHE DE LA CHART JS ==============
 //--------les tableaux des données--------------
 let labelChart = [];
 let dataChart = [];
@@ -388,7 +305,8 @@ tableExpense.forEach(element => {
 // ==================================================
 const ctx = document.getElementById('myChart');
 
-  let config  = {
+function showChart() {
+  let config = {
     type: 'doughnut',
     data: {
       labels: labelChart,
@@ -411,9 +329,39 @@ const ctx = document.getElementById('myChart');
       }
     }
   };
+
   let graphe = new Chart(ctx, config);
- 
+  return graphe;
+
+}
+// =================== APPEL DE LA FONCTION SHOWSART ================
+showChart();
+// ===================================================================
 
 
-// ==================================================
+//==================== SUPPRESSION DES PRODUITS  ===========================
 
+function deleteExpense (index) {
+  let depense = tableExpense[index];
+  console.log(depense.valeurProduit);
+  totalExpense -= depense.valeurProduit;
+  totalBalance = totalBudget - totalExpense;
+  tableExpense.splice(index, 1);
+  updatLocalStorage();
+  showStatus();
+  location.reload();
+}
+
+let tableExpenseCopy = [...tableExpense];
+function editExpense(index) {
+
+
+
+  // console.log(index);
+  // let depenseOriginal = tableExpense[index];
+   let depenseCopy = tableExpenseCopy[index];
+   inputExpenseTitle.value = depenseCopy.nomProduit;
+   inputExpenseAmount.value = depenseCopy.valeurProduit;
+  // tableExpenseCopy.splice(index, 1);
+
+}
