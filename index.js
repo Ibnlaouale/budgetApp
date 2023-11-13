@@ -7,7 +7,7 @@ const inputExpenseAmount = document.querySelector('#expenseValue');
 
 const buttonCalculate = document.querySelector('#calculBuget');
 const buttonAddExpense = document.querySelector('#addExpense');
-const buttonReset = document.querySelector('#reset')
+const buttonReset = document.querySelector('#reset');
 const buttonHistory = document.querySelector('#boutHistory');
 const buttonCloseHistory = document.querySelector('#boutCloseHistory');
 
@@ -57,7 +57,7 @@ let tableExpense = JSON.parse(localStorage.getItem('tableExpense'));
 let index = JSON.parse(localStorage.getItem('id'));
 // =============FONCTION DE MISE A JOUR DE LOCALSTORAGE =================
 
-function updatLocalStorage() {
+function updateLocalStorage() {
   localStorage.setItem('budget', JSON.stringify(totalBudget));
   localStorage.setItem('expense', JSON.stringify(totalExpense));
   localStorage.setItem('balance', JSON.stringify(totalBalance));
@@ -95,7 +95,7 @@ function addBudget() {
 
     totalBudget += valeur;
     totalBalance = totalBudget - totalExpense;
-    updatLocalStorage();
+    updateLocalStorage();
     showStatus();
 
     //  ------- notification -----------
@@ -109,6 +109,7 @@ function addBudget() {
 }
 
 function addExpense() {
+
   let productTitle = (inputExpenseTitle.value).trim();
   let productAmount = parseInt(inputExpenseAmount.value);
   totalExpense += productAmount;
@@ -228,43 +229,78 @@ function notifError(titre, descprition) {
 // ================================================================
 
 // ================ FONCTION POUR LA CREATION DES DEPENSES ================
+
 // console.log(tableExpense);
+let isChecked = false;
+let indexIsChecked = '';
+console.log(isChecked);
 
 
 function createExpense(titleExpense, valueExpense) {
-  const depense = {
-    id: index,
-    nomProduit: titleExpense.toLowerCase(),
-    valeurProduit: valueExpense
-  };
-  index++;
+  
   // ========== GESTION D'ERREURS ====================
-  if (titleExpense === '') {
+
+if (titleExpense === '' && valueExpense ==='') {
+   // ---------------------------------------notification --------------
+   titleNotif = 'Ajout de la depense';
+   descriptionNotif = 'veuillez renseigner la depense';
+   notifError(titleNotif, descriptionNotif);
+   return;
+   // -----------------------------------------------------------------------------
+ 
+}else if (titleExpense === '') {
     // ---------------------------------------notification --------------
     titleNotif = 'Ajout de la depense';
-    descriptionNotif = 'veuillez renseigner le titre de la depense';
+    descriptionNotif = 'veuillez renseigner la depense';
     notifError(titleNotif, descriptionNotif);
+    return;
     // -----------------------------------------------------------------------------
-  } else if (!valueExpense || valueExpense < 0 || valueExpense === '') {
+} else if (!valueExpense || valueExpense < 0 || valueExpense === '') {
 
     // ---------------------------------------notification ---------------------------
     titleNotif = 'Ajout de la depense';
     descriptionNotif = 'Le montant de votre depense doit être positif';
     notifError(titleNotif, descriptionNotif);
+    return;
     // ===============================================================================
-  } else {
+} else {
+
+    const depense = {
+      id: index,
+      nomProduit: titleExpense.toLowerCase(),
+      valeurProduit: valueExpense
+    };
+    index++;
+
     // ---------------- verification de l'existence de produit dans tableEexpense-------
     const existP = tableExpense.find((produit) => (produit.nomProduit) === titleExpense.toLowerCase());
     if (existP) {
+
+      // =======================================================================================
+    /*   if (isChecked === true) {
+        isChecked = false;
+        titleExpense = existP.nomProduit;
+        valueExpense = existP.valeurProduit;
+        let productToEdit = tableExpense[indexIsChecked];
+        totalExpense -= productToEdit.valeurProduit;
+        totalExpense = totalBudget - totalExpense;
+        tableExpense.splice(tableExpense.indexOf(existP), 1);
+        indexIsChecked = '';
+        updateLocalStorage();
+        return;
+    } */
+// =======================================================================================
       console.log(true);
       existP.valeurProduit += valueExpense;
+      
       // ---------------------------------------notification --------------------------------------
       titleNotif = 'Mise à jour de la depense';
       descriptionNotif = 'Depense mis à jour avec succès';
       notifSuccess(titleNotif, descriptionNotif);
       // -------------------------------------------------------------------------------------------
       console.log(existP);
-      updatLocalStorage();
+      updateLocalStorage();
+      
     } else {
       tableExpense.push(depense);
       // -------------------------- notification --------------------------------------
@@ -272,12 +308,15 @@ function createExpense(titleExpense, valueExpense) {
       descriptionNotif = 'votre depense a été ajoutée avec success';
       notifSuccess(titleNotif, descriptionNotif);
       // ----------------------------------------------------------------------------
-      updatLocalStorage();
+      updateLocalStorage();
     }
+    // calculateTotalExpense()
     console.log(tableExpense);
   }
  showStatus();
 }
+
+console.log(isChecked);
 
 function showStatus() {
   budgetStatus.innerHTML = `${totalBudget} F`;
@@ -286,6 +325,7 @@ function showStatus() {
   ligneDepense();
   ligneHistorique();
 }
+
 
 
 ///==============LE GRAPHE DE LA CHART JS ==============
@@ -347,21 +387,47 @@ function deleteExpense (index) {
   totalExpense -= depense.valeurProduit;
   totalBalance = totalBudget - totalExpense;
   tableExpense.splice(index, 1);
-  updatLocalStorage();
+  updateLocalStorage();
   showStatus();
   location.reload();
 }
 
+
+
+
+
 let tableExpenseCopy = [...tableExpense];
+
+
 function editExpense(index) {
+  isChecked = true;
+  indexIsChecked = index;
+  console.log(index);
+  let expenseToEdit = tableExpense[index];
+  // console.log(expenseToEdit);
+   inputExpenseTitle.value = expenseToEdit.nomProduit;
+   inputExpenseAmount.value = expenseToEdit.valeurProduit;
+  //  tableExpenseCopy.splice(index, 1);
+  //  tableExpense = tableExpenseCopy;
+}
 
 
+function controlerSaisie(valeurAutoriser) {
+  // Récupérer la valeur saisie
+  // var champInput = document.getElementById('monInput');
+  // var valeurSaisie = champInput.value;
+   valeurAutoriser = inputExpenseTitle.value;
+  // Validation (ex. : seulement des lettres autorisées)
+  let caracteresAutorises = /^[a-zA-Z]+$/;
 
-  // console.log(index);
-  // let depenseOriginal = tableExpense[index];
-   let depenseCopy = tableExpenseCopy[index];
-   inputExpenseTitle.value = depenseCopy.nomProduit;
-   inputExpenseAmount.value = depenseCopy.valeurProduit;
-  // tableExpenseCopy.splice(index, 1);
-
+  if (!caracteresAutorises.test(valeurAutoriser)) {
+      // Afficher un message d'erreur
+alert('stop')
+      // Bloquer la saisie du dernier caractère
+      valeurAutoriser  = inputExpenseTitle.value.slice(0, -1);
+  } else {
+      // Effacer le message d'erreur si la saisie est valide
+      // document.getElementById('messageErreur').innerText = '';
+      alert('continuez')
+  }
 }
