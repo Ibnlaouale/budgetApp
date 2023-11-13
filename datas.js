@@ -436,3 +436,29 @@ function notifError(titre, descprition) {
     descriptionNotif = '';
   }, 1500);
 }
+
+
+
+
+
+
+// ==========================================
+function controlerSaisie(valeurAutoriser) {
+  // Récupérer la valeur saisie
+  // var champInput = document.getElementById('monInput');
+  // var valeurSaisie = champInput.value;
+   valeurAutoriser = inputExpenseTitle.value;
+  // Validation (ex. : seulement des lettres autorisées)
+  let caracteresAutorises = /^[a-zA-Z]+$/;
+
+  if (!caracteresAutorises.test(valeurAutoriser)) {
+      // Afficher un message d'erreur
+alert('stop')
+      // Bloquer la saisie du dernier caractère
+      valeurAutoriser  = inputExpenseTitle.value.slice(0, -1);
+  } else {
+      // Effacer le message d'erreur si la saisie est valide
+      // document.getElementById('messageErreur').innerText = '';
+      alert('continuez')
+  }
+}

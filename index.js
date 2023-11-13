@@ -7,6 +7,7 @@ const inputExpenseAmount = document.querySelector('#expenseValue');
 
 const buttonCalculate = document.querySelector('#calculBuget');
 const buttonAddExpense = document.querySelector('#addExpense');
+const buttonUpdateExpense = document.querySelector('#updateExpense');
 const buttonReset = document.querySelector('#reset');
 const buttonHistory = document.querySelector('#boutHistory');
 const buttonCloseHistory = document.querySelector('#boutCloseHistory');
@@ -108,25 +109,27 @@ function addBudget() {
 
 }
 
+
 function addExpense() {
 
-  let productTitle = (inputExpenseTitle.value).trim();
+  let productTitle =  (inputExpenseTitle.value).trim();
   let productAmount = parseInt(inputExpenseAmount.value);
-  totalExpense += productAmount;
-  totalBalance = totalBudget - totalExpense;
-  // =====Appel de la fonction qui affiche l'etats des resultats =======
-  showStatus();
-  // =====Appel de la fonction qui cree les depenses =======
-  createExpense(productTitle, productAmount);
-  inputExpenseTitle.value = '';
-  inputExpenseAmount.value = '';
 
-  setTimeout(() => {
-    location.reload();
-  }, 2500);
+    totalExpense += productAmount;
+    totalBalance = totalBudget - totalExpense;
+    // =====Appel de la fonction qui affiche l'etats des resultats =======
+    showStatus();
+    // =====Appel de la fonction qui cree les depenses =======
+    createExpense(productTitle, productAmount);
+    inputExpenseTitle.value = '';
+    inputExpenseAmount.value = '';
+
+    setTimeout(() => {
+      location.reload();
+    }, 2500);
+ 
 
 }
-
 
 
 
@@ -175,7 +178,7 @@ function ligneHistorique() {
   tableExpense.forEach((element, index) => {
     let tr = document.createElement('tr');
     tabHistory.innerHTML += `<tr>
-                    <td>${index+1}</td>
+                    <td>${index + 1}</td>
                      <td class="nomDepense">${element.nomProduit}</td>
                      <td class="valeurDepense">${element.valeurProduit} F</td>
                      </tr>
@@ -231,31 +234,29 @@ function notifError(titre, descprition) {
 // ================ FONCTION POUR LA CREATION DES DEPENSES ================
 
 // console.log(tableExpense);
-let isChecked = false;
-let indexIsChecked = '';
-console.log(isChecked);
+
 
 
 function createExpense(titleExpense, valueExpense) {
-  
+
   // ========== GESTION D'ERREURS ====================
 
-if (titleExpense === '' && valueExpense ==='') {
-   // ---------------------------------------notification --------------
-   titleNotif = 'Ajout de la depense';
-   descriptionNotif = 'veuillez renseigner la depense';
-   notifError(titleNotif, descriptionNotif);
-   return;
-   // -----------------------------------------------------------------------------
- 
-}else if (titleExpense === '') {
+  if (titleExpense === '' && valueExpense === '') {
     // ---------------------------------------notification --------------
     titleNotif = 'Ajout de la depense';
     descriptionNotif = 'veuillez renseigner la depense';
     notifError(titleNotif, descriptionNotif);
     return;
     // -----------------------------------------------------------------------------
-} else if (!valueExpense || valueExpense < 0 || valueExpense === '') {
+
+  } else if (titleExpense === '') {
+    // ---------------------------------------notification --------------
+    titleNotif = 'Ajout de la depense';
+    descriptionNotif = 'veuillez renseigner la depense';
+    notifError(titleNotif, descriptionNotif);
+    return;
+    // -----------------------------------------------------------------------------
+  } else if (!valueExpense || valueExpense < 0 || valueExpense === '') {
 
     // ---------------------------------------notification ---------------------------
     titleNotif = 'Ajout de la depense';
@@ -263,7 +264,7 @@ if (titleExpense === '' && valueExpense ==='') {
     notifError(titleNotif, descriptionNotif);
     return;
     // ===============================================================================
-} else {
+  } else {
 
     const depense = {
       id: index,
@@ -276,23 +277,9 @@ if (titleExpense === '' && valueExpense ==='') {
     const existP = tableExpense.find((produit) => (produit.nomProduit) === titleExpense.toLowerCase());
     if (existP) {
 
-      // =======================================================================================
-    /*   if (isChecked === true) {
-        isChecked = false;
-        titleExpense = existP.nomProduit;
-        valueExpense = existP.valeurProduit;
-        let productToEdit = tableExpense[indexIsChecked];
-        totalExpense -= productToEdit.valeurProduit;
-        totalExpense = totalBudget - totalExpense;
-        tableExpense.splice(tableExpense.indexOf(existP), 1);
-        indexIsChecked = '';
-        updateLocalStorage();
-        return;
-    } */
-// =======================================================================================
       console.log(true);
       existP.valeurProduit += valueExpense;
-      
+
       // ---------------------------------------notification --------------------------------------
       titleNotif = 'Mise à jour de la depense';
       descriptionNotif = 'Depense mis à jour avec succès';
@@ -300,7 +287,7 @@ if (titleExpense === '' && valueExpense ==='') {
       // -------------------------------------------------------------------------------------------
       console.log(existP);
       updateLocalStorage();
-      
+
     } else {
       tableExpense.push(depense);
       // -------------------------- notification --------------------------------------
@@ -313,10 +300,10 @@ if (titleExpense === '' && valueExpense ==='') {
     // calculateTotalExpense()
     console.log(tableExpense);
   }
- showStatus();
+  showStatus();
 }
 
-console.log(isChecked);
+
 
 function showStatus() {
   budgetStatus.innerHTML = `${totalBudget} F`;
@@ -357,7 +344,7 @@ function showChart() {
       }]
     },
     options: {
-  
+
       scales: {
         x: {
           display: false,
@@ -381,7 +368,7 @@ showChart();
 
 //==================== SUPPRESSION DES PRODUITS  ===========================
 
-function deleteExpense (index) {
+function deleteExpense(index) {
   let depense = tableExpense[index];
   console.log(depense.valeurProduit);
   totalExpense -= depense.valeurProduit;
@@ -396,38 +383,93 @@ function deleteExpense (index) {
 
 
 
-let tableExpenseCopy = [...tableExpense];
-
-
+// let tableExpenseCopy = [...tableExpense];
+let updateIndex = -1;
+let oldPrice = 0;
 function editExpense(index) {
-  isChecked = true;
-  indexIsChecked = index;
   console.log(index);
+  updateIndex = index;
+  console.log('updateIndex', updateIndex);
+  isChecked = true;
+  console.log('sorite du check', isChecked);
+  buttonAddExpense.classList.add('d-none');
+  buttonUpdateExpense.classList.remove('d-none');
+
   let expenseToEdit = tableExpense[index];
-  // console.log(expenseToEdit);
-   inputExpenseTitle.value = expenseToEdit.nomProduit;
-   inputExpenseAmount.value = expenseToEdit.valeurProduit;
-  //  tableExpenseCopy.splice(index, 1);
-  //  tableExpense = tableExpenseCopy;
+  inputExpenseTitle.value = expenseToEdit.nomProduit;
+  inputExpenseAmount.value = expenseToEdit.valeurProduit;
+  oldPrice = parseInt(inputExpenseAmount.value);
+
+  //  tableExpense.splice(index, 1);
+
 }
+buttonUpdateExpense.addEventListener('click', () => {
+  updateExpense(inputExpenseTitle.value, inputExpenseAmount.value, updateIndex, oldPrice)
+inputExpenseTitle.value = '';
+inputExpenseAmount.value = '';
+})
+/* console.log(oldPrice);
+console.log(totalBalance);
+console.log(totalExpense);
+console.log(totalBudget); */
+function updateExpense(title, value, index, oldPrice) {
 
+  let updateTitle = title;
+  let updateValue = parseInt(value);
+  let updateIndex = index;
+  /* console.log(updateTitle);
+  console.log(updateValue);
+  console.log(updateIndex); */
+  console.log("=================================");
+  if (updateTitle === tableExpense[index].nomProduit) {
+    if (updateValue != tableExpense[index].valeurProduit) {
+      tableExpense[index].valeurProduit = updateValue;
+      // console.log('30 oldprice : ',oldPrice);
+      totalExpense -= oldPrice;
+      totalBalance = totalBalance + oldPrice;
+      // console.log('60 totalBalance : ', totalBalance);
+      // console.log('40 totalExpense - oldPrice',totalExpense);
+      totalExpense += updateValue;
+      // console.log('75 totalExpense + updateValue', totalExpense);
+      totalBalance = totalBudget - totalExpense;
+      // console.log('25 totalBalance', totalBalance); 
+      updateLocalStorage();
+      // ---------------------------------------notification --------------------------------------
+      titleNotif = 'Mise à jour de la depense';
+      descriptionNotif = 'Depense mis à jour avec succès';
+      notifSuccess(titleNotif, descriptionNotif);
+      // -------------------------------------------------------------------------------------------
+      showStatus();
+      showChart();
+    }
 
-function controlerSaisie(valeurAutoriser) {
-  // Récupérer la valeur saisie
-  // var champInput = document.getElementById('monInput');
-  // var valeurSaisie = champInput.value;
-   valeurAutoriser = inputExpenseTitle.value;
-  // Validation (ex. : seulement des lettres autorisées)
-  let caracteresAutorises = /^[a-zA-Z]+$/;
-
-  if (!caracteresAutorises.test(valeurAutoriser)) {
-      // Afficher un message d'erreur
-alert('stop')
-      // Bloquer la saisie du dernier caractère
-      valeurAutoriser  = inputExpenseTitle.value.slice(0, -1);
   } else {
-      // Effacer le message d'erreur si la saisie est valide
-      // document.getElementById('messageErreur').innerText = '';
-      alert('continuez')
+    totalExpense -= oldPrice;
+    totalBalance = totalBalance + oldPrice;
+    totalExpense += updateValue;
+    totalBalance = totalBudget - totalExpense;
+
+    const existP = tableExpense.find((produit) => (produit.nomProduit) === updateTitle.toLowerCase());
+    if (existP) {
+
+      existP.valeurProduit += updateValue;
+      console.log(existP);
+      tableExpense.splice(index,1);
+      updateLocalStorage();
+
+    } else{
+      
+      tableExpense[index].nomProduit = updateTitle;
+      tableExpense[index].valeurProduit = updateValue;
+      // ---------------------------------------notification --------------------------------------
+      titleNotif = 'Mise à jour de la depense';
+      descriptionNotif = 'Depense mis à jour avec succès';
+      notifSuccess(titleNotif, descriptionNotif);
+      // -------------------------------------------------------------------------------------------
+      updateLocalStorage();
+      showStatus();
+      showChart();
+    }
+
   }
 }
