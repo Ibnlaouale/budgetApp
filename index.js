@@ -111,7 +111,9 @@ function addBudget() {
 
 
 function addExpense() {
+  
 
+// ============================================================
   let productTitle =  (inputExpenseTitle.value).trim();
   let productAmount = parseInt(inputExpenseAmount.value);
 
@@ -389,9 +391,9 @@ let oldPrice = 0;
 function editExpense(index) {
   console.log(index);
   updateIndex = index;
-  console.log('updateIndex', updateIndex);
-  isChecked = true;
-  console.log('sorite du check', isChecked);
+  // console.log('updateIndex', updateIndex);
+  // isChecked = true;
+  // console.log('sorite du check', isChecked);
   buttonAddExpense.classList.add('d-none');
   buttonUpdateExpense.classList.remove('d-none');
 
@@ -404,7 +406,7 @@ function editExpense(index) {
 
 }
 buttonUpdateExpense.addEventListener('click', () => {
-  updateExpense(inputExpenseTitle.value, inputExpenseAmount.value, updateIndex, oldPrice)
+  updateExpense(inputExpenseTitle.value.trim(), inputExpenseAmount.value, updateIndex, oldPrice)
 inputExpenseTitle.value = '';
 inputExpenseAmount.value = '';
 })
@@ -414,7 +416,17 @@ console.log(totalExpense);
 console.log(totalBudget); */
 function updateExpense(title, value, index, oldPrice) {
 
-  let updateTitle = title;
+  if (title.trim() === '' && value === '') {
+    // ---------------------------------------notification --------------
+    titleNotif = 'Ajout de la depense';
+    descriptionNotif = 'veuillez renseigner la depense';
+    notifError(titleNotif, descriptionNotif);
+    return;
+    // --------------------------------------------------------------------
+
+  }
+// =========================================================================
+  let updateTitle = title.trim().toLowerCase();
   let updateValue = parseInt(value);
   let updateIndex = index;
   /* console.log(updateTitle);
@@ -455,6 +467,11 @@ function updateExpense(title, value, index, oldPrice) {
       existP.valeurProduit += updateValue;
       console.log(existP);
       tableExpense.splice(index,1);
+      // ---------------------------------------notification --------------------------------------
+      titleNotif = 'Mise à jour de la depense';
+      descriptionNotif = 'Depense mis à jour avec succès';
+      notifSuccess(titleNotif, descriptionNotif);
+      // -------------------------------------------------------------------------------------------
       updateLocalStorage();
 
     } else{
