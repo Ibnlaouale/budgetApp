@@ -111,17 +111,53 @@ function addBudget() {
 
 
 function addExpense() {
-  
 
-// ============================================================
-  let productTitle =  (inputExpenseTitle.value).trim();
-  let productAmount = parseInt(inputExpenseAmount.value);
+  if (inputExpenseTitle.value.trim() === '' && inputExpenseAmount.value === ''){
+
+ // ========== GESTION D'ERREURS ====================
+
+    // ---------------------------------------notification --------------
+    titleNotif = 'Ajout de la depense';
+    descriptionNotif = 'veuillez renseigner la depense';
+    notifError(titleNotif, descriptionNotif);
+    setTimeout(() => {
+      location.reload();
+    }, 2500);
+    return;
+    // -----------------------------------------------------------------------------
+
+  }else if (inputExpenseTitle.value.trim() === '') {
+    // ---------------------------------------notification -------------------------
+    titleNotif = 'Ajout de la depense';
+    descriptionNotif = 'veuillez renseigner la depense';
+    notifError(titleNotif, descriptionNotif);
+    setTimeout(() => {
+      location.reload();
+    }, 2500);
+    return;
+    // --------------------------------------------------------------------------------------------------------
+  } else if (!inputExpenseAmount.value || inputExpenseAmount.value < 0 || inputExpenseAmount.value === '') {
+
+    // ---------------------------------------notification ----------------------------------------------------
+    titleNotif = 'Ajout de la depense';
+    descriptionNotif = 'Le montant de votre depense doit être positif';
+    notifError(titleNotif, descriptionNotif);
+    setTimeout(() => {
+      location.reload();
+    }, 2500);
+    return;
+    // ====================================================================================================
+  } else{
+
+    // ====================================================================================================
+    let productTitle = (inputExpenseTitle.value).trim();
+    let productAmount = parseInt(inputExpenseAmount.value);
 
     totalExpense += productAmount;
     totalBalance = totalBudget - totalExpense;
-    // =====Appel de la fonction qui affiche l'etats des resultats =======
+    // =====Appel de la fonction qui affiche l'etats des resultats ===========================================
     showStatus();
-    // =====Appel de la fonction qui cree les depenses =======
+    // =====Appel de la fonction qui cree les depenses =====================================================
     createExpense(productTitle, productAmount);
     inputExpenseTitle.value = '';
     inputExpenseAmount.value = '';
@@ -129,7 +165,9 @@ function addExpense() {
     setTimeout(() => {
       location.reload();
     }, 2500);
- 
+
+
+  }
 
 }
 
@@ -241,33 +279,6 @@ function notifError(titre, descprition) {
 
 function createExpense(titleExpense, valueExpense) {
 
-  // ========== GESTION D'ERREURS ====================
-
-  if (titleExpense === '' && valueExpense === '') {
-    // ---------------------------------------notification --------------
-    titleNotif = 'Ajout de la depense';
-    descriptionNotif = 'veuillez renseigner la depense';
-    notifError(titleNotif, descriptionNotif);
-    return;
-    // -----------------------------------------------------------------------------
-
-  } else if (titleExpense === '') {
-    // ---------------------------------------notification --------------
-    titleNotif = 'Ajout de la depense';
-    descriptionNotif = 'veuillez renseigner la depense';
-    notifError(titleNotif, descriptionNotif);
-    return;
-    // -----------------------------------------------------------------------------
-  } else if (!valueExpense || valueExpense < 0 || valueExpense === '') {
-
-    // ---------------------------------------notification ---------------------------
-    titleNotif = 'Ajout de la depense';
-    descriptionNotif = 'Le montant de votre depense doit être positif';
-    notifError(titleNotif, descriptionNotif);
-    return;
-    // ===============================================================================
-  } else {
-
     const depense = {
       id: index,
       nomProduit: titleExpense.toLowerCase(),
@@ -301,7 +312,7 @@ function createExpense(titleExpense, valueExpense) {
     }
     // calculateTotalExpense()
     console.log(tableExpense);
-  }
+
   showStatus();
 }
 
@@ -407,8 +418,8 @@ function editExpense(index) {
 }
 buttonUpdateExpense.addEventListener('click', () => {
   updateExpense(inputExpenseTitle.value.trim(), inputExpenseAmount.value, updateIndex, oldPrice)
-inputExpenseTitle.value = '';
-inputExpenseAmount.value = '';
+  inputExpenseTitle.value = '';
+  inputExpenseAmount.value = '';
 })
 /* console.log(oldPrice);
 console.log(totalBalance);
@@ -425,7 +436,7 @@ function updateExpense(title, value, index, oldPrice) {
     // --------------------------------------------------------------------
 
   }
-// =========================================================================
+  // =========================================================================
   let updateTitle = title.trim().toLowerCase();
   let updateValue = parseInt(value);
   let updateIndex = index;
@@ -466,7 +477,7 @@ function updateExpense(title, value, index, oldPrice) {
 
       existP.valeurProduit += updateValue;
       console.log(existP);
-      tableExpense.splice(index,1);
+      tableExpense.splice(index, 1);
       // ---------------------------------------notification --------------------------------------
       titleNotif = 'Mise à jour de la depense';
       descriptionNotif = 'Depense mis à jour avec succès';
@@ -474,8 +485,8 @@ function updateExpense(title, value, index, oldPrice) {
       // -------------------------------------------------------------------------------------------
       updateLocalStorage();
 
-    } else{
-      
+    } else {
+
       tableExpense[index].nomProduit = updateTitle;
       tableExpense[index].valeurProduit = updateValue;
       // ---------------------------------------notification --------------------------------------
@@ -489,4 +500,7 @@ function updateExpense(title, value, index, oldPrice) {
     }
 
   }
+  setTimeout(() => {
+    location.reload();
+  }, 2500);
 }
